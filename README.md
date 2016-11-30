@@ -7,8 +7,7 @@
 We want to have a way for hackers to reach out to mentors during the hackathon. This would involve, at the very least, having a Slack integration that allows hackers to request help (what they need help on, where they are located, etc.) and a way for mentors to accept an incoming help request. Sort of like Uber for mentorship.  
 
 ### Set-up
-Install [SlackClient](https://github.com/slackapi/python-slackclient))
-https://github.com/slackapi/python-slackclient)
+Install [SlackClient](https://github.com/slackapi/python-slackclient)
 
 Create a file called `config.py` in the root directory. Put the following in it:
 
