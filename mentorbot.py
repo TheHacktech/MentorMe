@@ -3,6 +3,9 @@ import time
 import config
 from slackclient import SlackClient
 
+'''
+Wrapper for a SlackBot, using slackclient
+'''
 class SlackBot(object):
     def __init__(self, token):
         self.__connect(token)
@@ -11,6 +14,9 @@ class SlackBot(object):
         self.client = SlackClient(token)
 
     def getID(self, name):
+        '''
+        Get the ID of a user given their name.
+        '''
         api_call = self.client.api_call("users.list")
         if api_call.get('ok'):
             users = api_call.get('members')
@@ -19,9 +25,15 @@ class SlackBot(object):
                     return user.get('id')
 
     def privateMessage(self, message, channel):
+        '''
+        Send a private message to a user in the given PM channel.
+        '''
         self.client.api_call("chat.postMessage", channel=channel, text=message, as_user=False)
 
     def run(self):
+        '''
+        Open socket reading for input.
+        '''
         READ_WEBSOCKET_DELAY = 1
         if self.client.rtm_connect():
             print("Mentorbot connected and running!")
