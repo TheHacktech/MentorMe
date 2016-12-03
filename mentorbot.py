@@ -1,15 +1,22 @@
 import os
 import time
 import config
+import request
 from slackclient import SlackClient
 
 '''
 Wrapper for a SlackBot, using slackclient
 '''
 class SlackBot(object):
-    def __init__(self, token):
+    def __init__(self, token, mentor_list):
         self.__connect(token)
-
+        self.mentors = mentor_list
+        self.mentor_names = []
+        
+        for mentor in self.mentors:
+            self.mentor_names.append(mentor.name)
+            
+            
     def __connect(self, token):
         self.client = SlackClient(token)
 
@@ -29,7 +36,30 @@ class SlackBot(object):
         Send a private message to a user in the given PM channel.
         '''
         self.client.api_call("chat.postMessage", channel=channel, text=message, as_user=False)
-
+    
+    def parseMessage(self, msg_dict):
+        '''
+        Creates a Request object from the message dictionary
+        '''
+        try:
+            req = request.Request(msg_dict[0])
+            return req             
+        except:
+            print "wrong shit"
+        return None
+        
+    def fromWho(self, req):
+        '''
+         return who the request is from
+        for mentor_name in 
+        '''
+    def assignRequest(self, req):
+        for mentor in self.mentors:
+            if mentor.is_valid:
+                # assign mentor
+                print 'mentor assigned'
+            else:
+                print ' mentor not found'
     def run(self):
         '''
         Open socket reading for input.
@@ -38,8 +68,9 @@ class SlackBot(object):
         if self.client.rtm_connect():
             print("Mentorbot connected and running!")
             while True:
-                command, channel = parse_slack_output(self.client.rtm_read())
-                print command, channel
+                # for requests from participants
+                req = self.parseMessage(self.client.rtm_read())
+                self.assignRequest(req)
                 time.sleep(READ_WEBSOCKET_DELAY)
         else:
             print("Connection failed. Invalid Slack token or bot ID?")
@@ -47,4 +78,5 @@ class SlackBot(object):
 
 if __name__ == "__main__":
     bot = SlackBot(config.SLACK_TOKEN)
-    bot.getID("mentor")
+    print bot.getID("mentor")
+    bot.run()
