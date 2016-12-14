@@ -45,7 +45,7 @@ class SlackBot(object):
             req = request.Request(msg_dict[0])
             return req             
         except:
-            print "wrong shit"
+            print "wrong input"
         return None
         
     def fromWho(self, req):
