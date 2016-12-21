@@ -10,6 +10,7 @@ class Mentor(object):
         '''
         in dict, topic and language are both lists
         '''
+        self.name = info_dict['name']
         self.topics = info_dict['topic']
         self.languages = info_dict['language']
         self.busy = False
