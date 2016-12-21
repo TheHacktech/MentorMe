@@ -2,6 +2,7 @@ import os
 import time
 import config
 import request
+import mentor
 from slackclient import SlackClient
 
 '''
@@ -45,7 +46,7 @@ class SlackBot(object):
             req = request.Request(msg_dict[0])
             return req             
         except:
-            print "wrong input"
+            print "wrong shit"
         return None
         
     def fromWho(self, req):
@@ -54,8 +55,8 @@ class SlackBot(object):
         for mentor_name in 
         '''
     def assignRequest(self, req):
-        for mentor in self.mentors:
-            if mentor.is_valid:
+        for m in self.mentors:
+            if m.is_valid:
                 # assign mentor
                 print 'mentor assigned'
             else:
@@ -68,15 +69,25 @@ class SlackBot(object):
         if self.client.rtm_connect():
             print("Mentorbot connected and running!")
             while True:
-                # for requests from participants
+                # for messages from participants
+                print(self.client.rtm_read())
                 req = self.parseMessage(self.client.rtm_read())
                 self.assignRequest(req)
                 time.sleep(READ_WEBSOCKET_DELAY)
+                
+                # for messages from mentors
+                
         else:
             print("Connection failed. Invalid Slack token or bot ID?")
 
 
 if __name__ == "__main__":
-    bot = SlackBot(config.SLACK_TOKEN)
+    mentor1 = mentor.Mentor({'name': 'mntr1', 'topic': 'stuff', 'language': 'C++'})
+    mentor2 = mentor.Mentor({'name': 'mntr2', 'topic': 'stuff2', 'language': 'Java'})
+    mentor_list = [mentor1, mentor2]
+    bot = SlackBot(config.SLACK_TOKEN, mentor_list)
     print bot.getID("mentor")
     bot.run()
+
+#[{u'type': u'user_typing', u'user': u'U34LJ4C11', u'channel': u'D341VTH4Y'}]
+# format of inputs
