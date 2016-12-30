@@ -13,13 +13,20 @@ class SlackBot(object):
         self.__connect(token)
         self.mentors = mentor_list
         self.mentor_names = []
-        
+
         for mentor in self.mentors:
             self.mentor_names.append(mentor.name)
-            
-            
+
+
     def __connect(self, token):
         self.client = SlackClient(token)
+
+    def getUsers(self):
+        self.users = {}
+        res = self.client.api_call("users.list")
+        for user in res["members"]:
+            self.users[user["id"]] = user["real_name"]
+        return True
 
     def getID(self, name):
         '''
@@ -37,30 +44,34 @@ class SlackBot(object):
         Send a private message to a user in the given PM channel.
         '''
         self.client.api_call("chat.postMessage", channel=channel, text=message, as_user=False)
-    
-    def parseMessage(self, msg_dict):
+
+    def parseHackerMessage(self, msg_dict):
         '''
         Creates a Request object from the message dictionary
         '''
         try:
-            req = request.Request(msg_dict[0])
-            return req             
+            if (msg_dict[0]["channel"][0] == "D"):
+                req = request.Request(msg_dict[0])
+                return req
         except:
-            print "wrong shit"
+            pass
         return None
-        
+
     def fromWho(self, req):
         '''
          return who the request is from
-        for mentor_name in 
+        for mentor_name in
         '''
+        pass
+
     def assignRequest(self, req):
         for m in self.mentors:
-            if m.is_valid:
-                # assign mentor
+            if m.is_valid(req):
+                m.assignTask(req)
                 print 'mentor assigned'
-            else:
-                print ' mentor not found'
+                return True
+        return False
+
     def run(self):
         '''
         Open socket reading for input.
@@ -68,15 +79,15 @@ class SlackBot(object):
         READ_WEBSOCKET_DELAY = 1
         if self.client.rtm_connect():
             print("Mentorbot connected and running!")
+            self.getUsers()
             while True:
-                # for messages from participants
-                print(self.client.rtm_read())
-                req = self.parseMessage(self.client.rtm_read())
-                self.assignRequest(req)
+                inc = self.client.rtm_read()
+                print inc
+                req = self.parseHackerMessage(inc)
+                if req is not None:
+                    self.assignRequest(req)
                 time.sleep(READ_WEBSOCKET_DELAY)
-                
-                # for messages from mentors
-                
+
         else:
             print("Connection failed. Invalid Slack token or bot ID?")
 
@@ -86,7 +97,6 @@ if __name__ == "__main__":
     mentor2 = mentor.Mentor({'name': 'mntr2', 'topic': 'stuff2', 'language': 'Java'})
     mentor_list = [mentor1, mentor2]
     bot = SlackBot(config.SLACK_TOKEN, mentor_list)
-    print bot.getID("mentor")
     bot.run()
 
 #[{u'type': u'user_typing', u'user': u'U34LJ4C11', u'channel': u'D341VTH4Y'}]
